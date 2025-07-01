@@ -1,4 +1,5 @@
 ﻿using AliyewShop.Domain.Entities;
+using AliyewShop.Persistence.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace AliyewShop.Persistence.Contexts;
@@ -9,6 +10,11 @@ public class AliyewShopDbContext : DbContext
     {
     }
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(CategoryConfiguration).Assembly);
+        base.OnModelCreating(modelBuilder);
+    }
     public DbSet<User> Users { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<Category> Categories { get; set; }
@@ -18,18 +24,4 @@ public class AliyewShopDbContext : DbContext
     public DbSet<Favourite> Favourites { get; set; }
     public DbSet<Image> Images { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        // Relations
-        modelBuilder.Entity<Category>()
-            .HasMany(c => c.SubCategories)
-            .WithOne(c => c.ParentCategory)
-            .HasForeignKey(c => c.ParentCategoryId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<OrderProduct>()
-            .HasKey(op => new { op.OrderId, op.ProductId });
-
-        base.OnModelCreating(modelBuilder);
-    }
 }
