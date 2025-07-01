@@ -1,0 +1,6 @@
+@AliyewShop.WebApi_HostAddress = http://localhost:5182
+
+GET {{AliyewShop.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
