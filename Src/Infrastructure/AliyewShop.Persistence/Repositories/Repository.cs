@@ -20,6 +20,7 @@ public class Repository<T> : IRepository<T> where T : BaseEntity, new()
 
     public async Task AddAsync(T entity)
     {
+        entity.CreatedAt = DateTime.Now;
         await Table.AddAsync(entity);
     }
 
