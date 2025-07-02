@@ -8,19 +8,22 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 {
     public void Configure(EntityTypeBuilder<Category> builder)
     {
+        builder.ToTable("Categories");
+
         builder.HasKey(c => c.Id);
 
-        builder.Property(c => c.Name)
-            .IsRequired()
-            .HasMaxLength(100);
+        builder.Property(c => c.Name).IsRequired();
 
+        // ParentCategory - SubCategories (Self-referencing one-to-many)
         builder.HasOne(c => c.ParentCategory)
             .WithMany(c => c.SubCategories)
             .HasForeignKey(c => c.ParentCategoryId)
+            .IsRequired(false)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(c => c.Products)
             .WithOne(p => p.Category)
-            .HasForeignKey(p => p.CategoryId);
+            .HasForeignKey(p => p.CategoryId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

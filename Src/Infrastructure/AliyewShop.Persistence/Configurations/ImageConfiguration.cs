@@ -8,14 +8,16 @@ public class ImageConfiguration : IEntityTypeConfiguration<Image>
 {
     public void Configure(EntityTypeBuilder<Image> builder)
     {
+        builder.ToTable("Images");
+
         builder.HasKey(i => i.Id);
 
-        builder.Property(i => i.ImageUrl)
-            .IsRequired();
+        builder.Property(i => i.ImageUrl).IsRequired();
 
         builder.HasOne(i => i.Product)
             .WithMany(p => p.Images)
             .HasForeignKey(i => i.ProductId)
             .OnDelete(DeleteBehavior.Restrict);
+
     }
 }

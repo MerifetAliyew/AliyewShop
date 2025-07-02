@@ -15,36 +15,22 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
 
         builder.HasKey(r => r.Id);
 
-        builder.Property(r => r.IsConfirmed)
-            .IsRequired();
+        builder.Property(r => r.CommentBody).HasMaxLength(2000).IsRequired(false);
+        builder.Property(r => r.IsConfirmed).IsRequired();
+        builder.Property(r => r.CreatedAt).IsRequired();
+        builder.Property(r => r.Rating).IsRequired();
 
-        builder.Property(r => r.ConfirmedAt)
-            .IsRequired(false);
-
-        builder.Property(r => r.CommentBody)
-            .HasMaxLength(1000)
-            .IsRequired(false);
-
-        builder.Property(r => r.Rating)
-            .IsRequired();
-
-        builder.Property(r => r.CreatedAt)
-            .IsRequired();
-
-        // Review - Product əlaqəsi (1 Product-da çox Review ola bilər)
         builder.HasOne(r => r.Product)
-            .WithMany(p => p.Reviews)  // Product entity-də Reviews kolleksiyası olmalıdır
+            .WithMany(p => p.Reviews)
             .HasForeignKey(r => r.ProductId)
-            .OnDelete(DeleteBehavior.Restrict); // Cascade silməni qadağan edir
+            .OnDelete(DeleteBehavior.Restrict);
 
-        // Review - User əlaqəsi (1 User-da çox Review ola bilər)
         builder.HasOne(r => r.User)
-            .WithMany(u => u.Reviews)  // User entity-də Reviews kolleksiyası olmalıdır
+            .WithMany(u => u.Reviews)
             .HasForeignKey(r => r.UserId)
-            .OnDelete(DeleteBehavior.Restrict); // Cascade silməni qadağan edir
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
-
 
 
 

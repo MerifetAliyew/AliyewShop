@@ -1,9 +1,7 @@
 ﻿namespace AliyewShop.Domain.Entities;
 
-public class Product
+public class Product : BaseEntity
 {
-    // Məhsulun unikal ID-si (BaseEntity-dən gəlir, amma ayrıca ID istəyirsənsə əlavə et)
-    public int ProductId { get; set; }
 
     // Məhsulun adı (məsələn: "Qadın Gödəkçəsi")
     public string Title { get; set; }
@@ -33,12 +31,12 @@ public class Product
     public string Season { get; set; }
 
     // Məhsul hansı kateqoriyaya aiddir (məs: "Üst geyim", "Ayaqqabı")
-    public int CategoryId { get; set; }
+    public Guid CategoryId { get; set; }
     public Category Category { get; set; }
 
     // Məhsulu əlavə edən istifadəçi (satıcı)
-    public int OwnerId { get; set; }
-    public User Owner { get; set; }
+    public string OwnerId { get; set; }
+    public AppUser Owner { get; set; }
 
     // Məhsula aid şəkillər
     public ICollection<Image> Images { get; set; }

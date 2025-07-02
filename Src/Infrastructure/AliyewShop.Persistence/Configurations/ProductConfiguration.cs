@@ -10,36 +10,16 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
     {
         builder.ToTable("Products");
 
-        builder.HasKey(p => p.ProductId);
 
-        builder.Property(p => p.Title)
-            .IsRequired()
-            .HasMaxLength(150);
-
-        builder.Property(p => p.Description)
-            .HasMaxLength(1000);
-
-        builder.Property(p => p.Price)
-            .HasColumnType("decimal(18,2)")
-            .IsRequired();
-
-        builder.Property(p => p.StockCount)
-            .IsRequired();
-
-        builder.Property(p => p.Size)
-            .HasMaxLength(10);
-
-        builder.Property(p => p.Color)
-            .HasMaxLength(50);
-
-        builder.Property(p => p.Gender)
-            .HasMaxLength(20);
-
-        builder.Property(p => p.Material)
-            .HasMaxLength(100);
-
-        builder.Property(p => p.Season)
-            .HasMaxLength(50);
+        builder.Property(p => p.Title).IsRequired();
+        builder.Property(p => p.Description).IsRequired();
+        builder.Property(p => p.Price).IsRequired();
+        builder.Property(p => p.StockCount).IsRequired();
+        builder.Property(p => p.Size).IsRequired();
+        builder.Property(p => p.Color).IsRequired();
+        builder.Property(p => p.Gender).IsRequired();
+        builder.Property(p => p.Material).IsRequired();
+        builder.Property(p => p.Season).IsRequired();
 
         builder.HasOne(p => p.Category)
             .WithMany(c => c.Products)
@@ -63,7 +43,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 
         builder.HasMany(p => p.Reviews)
             .WithOne(r => r.Product)
-            .HasForeignKey(r => r.Product)
+            .HasForeignKey(r => r.ProductId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(p => p.OrderProducts)

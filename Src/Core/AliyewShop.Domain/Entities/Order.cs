@@ -1,4 +1,6 @@
-﻿namespace AliyewShop.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace AliyewShop.Domain.Entities;
 
 public class Order : BaseEntity
 {
@@ -19,9 +21,8 @@ public class Order : BaseEntity
 
     // Alıcının və ya adminin sifarişə əlavə etdiyi qeyd
     public string? InternalNote { get; set; } // əvvəl: Note
-
-    // Sifarişlə əlaqəli istifadəçilər (Buyer, Seller və ya Admin ola bilər)
-    public ICollection<User> LinkedUsers { get; set; } // əvvəl: AppUsers
+    public string UserId { get; set; }
+    public AppUser User { get; set; }
 
     // Bu sifarişdə hansı məhsullar var
     public ICollection<OrderProduct> OrderDetails { get; set; } // əvvəl: OrderProducts

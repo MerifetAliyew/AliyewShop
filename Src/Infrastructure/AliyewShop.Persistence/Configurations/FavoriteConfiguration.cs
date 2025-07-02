@@ -8,19 +8,20 @@ public class FavouriteConfiguration : IEntityTypeConfiguration<Favourite>
 {
     public void Configure(EntityTypeBuilder<Favourite> builder)
     {
+        builder.ToTable("Favourites");
+
         builder.HasKey(f => f.Id);
 
-        builder.Property(f => f.CreatedAt)
-            .IsRequired();
+        builder.Property(f => f.CreatedAt).IsRequired();
 
         builder.HasOne(f => f.Product)
             .WithMany(p => p.Favourites)
             .HasForeignKey(f => f.ProductId)
-            .OnDelete(DeleteBehavior.Restrict); 
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(f => f.User)
             .WithMany(u => u.Favourites)
             .HasForeignKey(f => f.UserId)
-            .OnDelete(DeleteBehavior.Restrict); 
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

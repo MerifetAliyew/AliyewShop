@@ -14,19 +14,20 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder.Property(o => o.OrderAt).IsRequired();
 
-        builder.Property(o => o.PaymentType).HasMaxLength(50);
+        builder.Property(o => o.PaymentType).HasMaxLength(100).IsRequired(false);
+        builder.Property(o => o.ShipToAddress).HasMaxLength(1000).IsRequired(false);
+        builder.Property(o => o.GrandTotal).IsRequired(false);
+        builder.Property(o => o.Progress).HasMaxLength(50).IsRequired(false);
+        builder.Property(o => o.InternalNote).HasMaxLength(1000).IsRequired(false);
 
-        builder.Property(o => o.ShipToAddress).HasMaxLength(250);
-
-        builder.Property(o => o.GrandTotal).HasColumnType("decimal(18,2)");
-
-        builder.Property(o => o.Progress).HasMaxLength(50);
-
-        builder.Property(o => o.InternalNote).HasMaxLength(500);
+        builder.HasOne(o => o.User)
+            .WithMany(u => u.Orders)
+            .HasForeignKey(o => o.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(o => o.OrderDetails)
-               .WithOne(op => op.Order)
-               .HasForeignKey(op => op.OrderId)
-               .OnDelete(DeleteBehavior.Restrict);
+            .WithOne(od => od.Order)
+            .HasForeignKey(od => od.OrderId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
