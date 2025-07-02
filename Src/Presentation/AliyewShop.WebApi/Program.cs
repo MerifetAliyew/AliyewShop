@@ -4,6 +4,7 @@ using AliyewShop.Persistence;
 using AliyewShop.Persistence.Contexts;
 using AliyewShop.Persistence.Repositories;
 using AliyewShop.Persistence.Services;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -12,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AliyewShopDbContext>(options =>
