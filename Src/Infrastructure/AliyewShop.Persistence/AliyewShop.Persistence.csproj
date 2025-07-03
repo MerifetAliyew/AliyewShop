@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\AliyewShop.Application\AliyewShop.Application.csproj" />
+    <ProjectReference Include="..\AliyewShop.Infrastructure\AliyewShop.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

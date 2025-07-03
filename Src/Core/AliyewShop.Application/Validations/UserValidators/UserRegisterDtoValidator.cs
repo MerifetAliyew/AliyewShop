@@ -18,8 +18,5 @@ public class UserRegisterDtoValidator : AbstractValidator<UserRegisterDto>
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Şifrə boş ola bilməz")
             .MinimumLength(6).WithMessage("Şifrə minimum 6 simvol olmalıdır");
-
-        RuleFor(x => x.Role)
-            .IsInEnum().WithMessage("Rol yalnız Buyer və ya Seller ola bilər");
     }
 }

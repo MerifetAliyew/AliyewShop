@@ -1,6 +1,7 @@
 using System.Text;
 using AliyewShop.Application.Abstracts.Repositories;
 using AliyewShop.Application.Abstracts.Services;
+using AliyewShop.Application.Shared.Helpers;
 using AliyewShop.Application.Shared.Settings;
 using AliyewShop.Application.Validations.ProductValidatiors;
 using AliyewShop.Domain.Entities;
@@ -15,6 +16,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using AliyewShop.Application.Abstracts.Services;
+using AliyewShop.Infrastructure.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,7 +76,20 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     .AddEntityFrameworkStores<AliyewShopDbContext>()
 .AddDefaultTokenProviders();
 builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JWTSettings"));
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JWTSettings>();
+
+builder.Services.AddAuthorization(options =>
+{
+    foreach (var permission in PermissionHelper.GetAllPermissionsList())
+    {
+        options.AddPolicy(permission, policy =>
+        {
+            policy.RequireClaim("Permission", permission);
+        });
+    }
+});
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -102,14 +118,12 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-// Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
 

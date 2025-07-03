@@ -1,7 +1,9 @@
 ﻿using AliyewShop.Application.Abstracts.Repositories;
 using AliyewShop.Application.Abstracts.Services;
+using AliyewShop.Application.Validations.FavouriteValidators;
 using AliyewShop.Persistence.Repositories;
 using AliyewShop.Persistence.Services;
+using AliyewShop.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AliyewShop.Persistence;
@@ -23,6 +25,8 @@ public static class ServiceRegistration
         #region Servicies
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IRoleService, RoleService>();
+        services.AddScoped<IEmailService, EmailService>();
         #endregion
 
 
