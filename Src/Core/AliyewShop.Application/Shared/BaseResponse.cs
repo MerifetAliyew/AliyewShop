@@ -14,12 +14,12 @@ public class BaseResponse<T>
     {
         Success = true;
         StatusCode = statusCode;
-    }
 
+    }
     public BaseResponse(string message, HttpStatusCode statusCode)
     {
         Message = message;
-        Success = true;
+        Success = false;
         StatusCode = statusCode;
     }
 
@@ -29,16 +29,11 @@ public class BaseResponse<T>
         Success = isSuccess;
         StatusCode = statusCode;
     }
-
     public BaseResponse(string message, T? data, HttpStatusCode statusCode)
     {
-        Message = message;
-        Data = data;
         Success = true;
+        Data = data;
+        Message = message;
         StatusCode = statusCode;
     }
-
-
-
-
 }

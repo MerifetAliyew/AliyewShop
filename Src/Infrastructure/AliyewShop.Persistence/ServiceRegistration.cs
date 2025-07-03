@@ -22,6 +22,7 @@ public static class ServiceRegistration
 
         #region Servicies
         services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IUserService, UserService>();
         #endregion
 
 
