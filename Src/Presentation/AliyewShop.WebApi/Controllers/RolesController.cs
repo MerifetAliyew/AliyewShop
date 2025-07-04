@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using AliyewShop.Application.Abstracts.Services;
+using AliyewShop.Application.DTOs.RoleDtos;
+using AliyewShop.Application.Shared;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,10 +12,22 @@ namespace AliyewShop.WebApi.Controllers;
 [ApiController]
 public class RolesController : ControllerBase
 {
-    // GET: api/<RolesController>
-    [HttpGet]
-    public IEnumerable<string> Get()
+    private readonly IRoleService _roleService;
+
+    public RolesController(IRoleService roleService)
     {
-        return new string[] { "value1", "value2" };
+        _roleService = roleService;
     }
+
+    [HttpPost("create-role")]
+    [ProducesResponseType(typeof(BaseResponse<string?>), (int)HttpStatusCode.Created)]
+    [ProducesResponseType(typeof(BaseResponse<string?>), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(BaseResponse<string?>), (int)HttpStatusCode.InternalServerError)]
+    public async Task<IActionResult> CreateRole([FromBody] RoleCreateDto dto)
+    {
+        var result = await _roleService.CreateRole(dto);
+        return StatusCode((int)result.StatusCode, result);
+    }
+
+
 }

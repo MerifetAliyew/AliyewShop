@@ -5,6 +5,7 @@ using AliyewShop.Persistence.Repositories;
 using AliyewShop.Persistence.Services;
 using AliyewShop.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
+using AliyewShop.Infrastructure;
 
 namespace AliyewShop.Persistence;
 
@@ -27,6 +28,7 @@ public static class ServiceRegistration
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IFileService, FileService>();
         #endregion
 
 
