@@ -38,38 +38,57 @@ public class UserService : IUserService
     }
     public async Task<BaseResponse<string>> Register(UserRegisterDto dto)
     {
+        // Email artıq varsa, qeydiyyata icazə verilmir
         var existedEmail = await _userManager.FindByEmailAsync(dto.Email);
         if (existedEmail is not null)
         {
-            return new BaseResponse<string>("This account already exists", System.Net.HttpStatusCode.BadRequest);
-
+            return new BaseResponse<string>("This account already exists", HttpStatusCode.BadRequest);
         }
-        AppUser newUser = new AppUser
+
+        // Rol adını enumdan string kimi al (Buyer/Seller)
+        var roleName = dto.Role.ToString();
+
+        // Rol mövcuddursa davam et, yoxdursa error qaytar
+        if (!await _roleManager.RoleExistsAsync(roleName))
+        {
+            return new BaseResponse<string>("Selected role is invalid", HttpStatusCode.BadRequest);
+        }
+
+        // Yeni istifadəçini yarat
+        var newUser = new AppUser
         {
             Fullname = dto.FullName,
             Email = dto.Email,
             UserName = dto.Email
         };
-        IdentityResult identityResult = await _userManager.CreateAsync(newUser, dto.Password);
+
+        // İstifadəçini yaradıb şifrəni təyin et
+        var identityResult = await _userManager.CreateAsync(newUser, dto.Password);
         if (!identityResult.Succeeded)
         {
-            var errors = identityResult.Errors;
-            StringBuilder errorsMessage = new StringBuilder();
-            foreach (var error in errors)
-            {
-                errorsMessage.Append(error.Description + ";");
-            }
-            return new(errorsMessage.ToString(), System.Net.HttpStatusCode.BadRequest);
+            var errorsMessage = string.Join(";", identityResult.Errors.Select(e => e.Description));
+            return new(errorsMessage, HttpStatusCode.BadRequest);
         }
+
+        // İstifadəçiyə rol ver
+        var roleResult = await _userManager.AddToRoleAsync(newUser, roleName);
+        if (!roleResult.Succeeded)
+        {
+            var errors = string.Join("; ", roleResult.Errors.Select(e => e.Description));
+            return new($"Failed to assign role: {errors}", HttpStatusCode.BadRequest);
+        }
+
+        // Email təsdiqləmə linki yaradılır
         string confirmEmailLink = await GetEmailConfirmLink(newUser);
-        await _mailService.SendEmailAsync(new List<string> { newUser.Email }, "Email Confirmation", confirmEmailLink);
+        await _mailService.SendEmailAsync(
+            new List<string> { newUser.Email },
+            "Email Confirmation",
+            confirmEmailLink
+        );
 
-        return new BaseResponse<string>(
-            "User registered successfully. Please confirm email.",
-            confirmEmailLink,
-            HttpStatusCode.Created);
-
-
+        // Rol ilə birlikdə mesajı geri qaytar
+        var message = $"User registered successfully with role: {roleName}. Please confirm email.";
+        return new BaseResponse<string>(message, confirmEmailLink, HttpStatusCode.Created);
     }
 
     public async Task<BaseResponse<TokenResponse>> Login(UserLoginDto dto)
@@ -150,6 +169,7 @@ public class UserService : IUserService
             ExpireDate = tokenDescriptor.Expires!.Value
         };
     }
+
     public async Task<BaseResponse<string>> AddRole(UserAddRoleDto dto)
     {
         var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
@@ -183,6 +203,7 @@ public class UserService : IUserService
           $"Successfully added roles: {string.Join(", ", roleNames)} to user.",
               HttpStatusCode.OK);
     }
+
     public async Task<BaseResponse<string>> ConfirmEmail(string userId, string token)
     {
         var existedUser = await _userManager.FindByIdAsync(userId);
@@ -208,6 +229,7 @@ public class UserService : IUserService
         return link;
 
     }
+
     public async Task<BaseResponse<TokenResponse>> RefreshTokenAsync(RefreshTokenRequest request)
     {
         var principal = GetPrincipalFromExpiredToken(request.AccessToken);
@@ -266,4 +288,40 @@ public class UserService : IUserService
         return Convert.ToBase64String(randomNumber);
     }
 
+    public async Task<BaseResponse<string>> ResetPasswordAsync(UserResetPasswordDto dto)
+    {
+        var user = await _userManager.FindByEmailAsync(dto.Email);
+        if (user == null)
+            return new BaseResponse<string>("User not found", HttpStatusCode.NotFound);
+
+        var decodedToken = WebUtility.UrlDecode(dto.Token);
+        var result = await _userManager.ResetPasswordAsync(user, decodedToken, dto.NewPassword);
+
+        if (!result.Succeeded)
+        {
+            var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+            return new BaseResponse<string>(errors, HttpStatusCode.BadRequest);
+        }
+
+        return new BaseResponse<string>("Password has been reset successfully.", HttpStatusCode.OK);
+    }
+
+    public async Task<BaseResponse<string>> SendResetPasswordEmailAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+            return new BaseResponse<string>("User not found", HttpStatusCode.NotFound);
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var encodedToken = WebUtility.UrlEncode(token);
+
+        var resetLink = $"https://localhost:7041/api/Accounts/reset-password?email={email}&token={encodedToken}";
+
+        await _mailService.SendEmailAsync(
+            new List<string> { email },
+            "Password Reset",
+            $"Please reset your password by clicking {resetLink}");
+
+        return new BaseResponse<string>("Password reset link has been sent to your email.", HttpStatusCode.OK);
+    }
 }

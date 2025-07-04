@@ -50,16 +50,16 @@ public class AccountsController : ControllerBase
         return StatusCode((int)result.StatusCode, result);
     }
 
-    //[HttpPost("assign-roles")]
-    //[ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.OK)]
-    //[ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.NotFound)]
-    //[ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.BadRequest)]
-    //[ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.InternalServerError)]
-    //public async Task<IActionResult> AddRole([FromBody] UserAddRoleDto dto)
-    //{
-    //    var result = await _userService.RefreshTokenAsync(dto);
-    //    return StatusCode((int)result.StatusCode, result);
-    //}
+    [HttpPost("assign-roles")]
+    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.InternalServerError)]
+    public async Task<IActionResult> AddRole([FromBody] UserAddRoleDto dto)
+    {
+        var result = await _userService.AddRole(dto); 
+        return StatusCode((int)result.StatusCode, result);
+    }
 
     [HttpGet("confirm-email")]
     [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.OK)]
@@ -71,5 +71,33 @@ public class AccountsController : ControllerBase
         var result = await _userService.ConfirmEmail(userId, token);
         return StatusCode((int)result.StatusCode, result);
 
+    }
+
+    [HttpPost("reset-password")]
+    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> ResetPassword([FromBody] UserResetPasswordDto dto)
+    {
+        var result = await _userService.ResetPasswordAsync(dto);
+        if (result.StatusCode != HttpStatusCode.OK)
+        {
+            return StatusCode((int)result.StatusCode, result);
+        }
+        return Ok(result.Message);
+    }
+
+    [HttpPost("reset-password-email")]
+    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> SendResetPasswordEmail([FromBody] string email)
+    {
+        var result = await _userService.SendResetPasswordEmailAsync(email);
+        if (result.StatusCode != HttpStatusCode.OK)
+        {
+            return StatusCode((int)result.StatusCode, result);
+        }
+        return Ok(result.Message);
     }
 }

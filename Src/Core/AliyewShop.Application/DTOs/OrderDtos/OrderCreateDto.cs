@@ -1,6 +1,6 @@
 ﻿namespace AliyewShop.Application.DTOs.OrderDtos;
 
-public class OrderCreateDto
+public record class OrderCreateDto
 {
     public string ShippingAddress { get; set; } = null!;
     public string PaymentType { get; set; } = null!;

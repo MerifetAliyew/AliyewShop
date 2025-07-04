@@ -25,7 +25,7 @@ public class RoleService : IRoleService
             return new BaseResponse<string?>("This role already exists", HttpStatusCode.BadRequest);
         }
 
-        var allPermissions = PermissionHelper.GetAllPermissionsList();
+        var allPermissions = PermissionHelper.GetPermissionList();
         var invalidPermissions = dto.PermissionsList.Except(allPermissions).ToList();
 
         if (invalidPermissions.Any())

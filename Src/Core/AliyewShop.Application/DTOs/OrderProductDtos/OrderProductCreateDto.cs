@@ -1,6 +1,6 @@
 ﻿namespace AliyewShop.Application.DTOs.OrderProductDtos;
 
-public class OrderProductCreateDto
+public record class OrderProductCreateDto
 {
     public Guid ProductId { get; set; }     // Məhsulun ID-si
     public int ProductCount { get; set; }   // Məhsul sayı

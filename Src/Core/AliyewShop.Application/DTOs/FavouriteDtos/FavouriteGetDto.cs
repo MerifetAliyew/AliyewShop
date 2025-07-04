@@ -1,6 +1,6 @@
 ﻿namespace AliyewShop.Application.DTOs.FavouriteDtos;
 
-public class FavouriteGetDto
+public record class FavouriteGetDto
 {
     public Guid Id { get; set; } // Favoritin öz ID-si
     public Guid ProductId { get; set; }

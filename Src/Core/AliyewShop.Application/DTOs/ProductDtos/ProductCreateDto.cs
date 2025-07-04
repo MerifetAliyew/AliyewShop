@@ -1,6 +1,6 @@
 ﻿namespace AliyewShop.Application.DTOs.ProductDtos;
 
-public class ProductCreateDto
+public record class ProductCreateDto
 {
     public string Title { get; set; } = null!;
     public string Description { get; set; } = null!;

@@ -1,6 +1,6 @@
 ﻿namespace AliyewShop.Application.DTOs.ReviewDtos;
 
-public class ReviewCreateDto
+public record class ReviewCreateDto
 {
     public Guid ProductId { get; set; }
     public string? CommentBody { get; set; }

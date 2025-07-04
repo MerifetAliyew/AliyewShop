@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using System.Security;
+using AliyewShop.Application.Shared;
 
 namespace AliyewShop.Application.Shared.Helpers;
 
@@ -7,28 +9,28 @@ public static class PermissionHelper
     public static Dictionary<string, List<string>> GetAllPermissions()
     {
         var result = new Dictionary<string, List<string>>();
+
         var nestedTypes = typeof(Permissions).GetNestedTypes(BindingFlags.Public | BindingFlags.Static);
 
         foreach (var moduleType in nestedTypes)
         {
-            var allProperty = moduleType.GetProperty("All", BindingFlags.Public | BindingFlags.Static);
-
-            if (allProperty != null)
+            var allfield = moduleType.GetField("All", BindingFlags.Public | BindingFlags.Static);
+            if (allfield != null)
             {
-                var permissions = allProperty.GetValue(null) as List<string>;
-                if (permissions != null && permissions.Any())
+                var permissions = allfield.GetValue(null) as List<string>;
+                if (permissions != null)
                 {
                     result.Add(moduleType.Name, permissions);
                 }
             }
         }
+
         return result;
     }
 
-    public static List<string> GetAllPermissionsList()
+    public static List<string> GetPermissionList()
     {
-        return GetAllPermissions()
-            .SelectMany(x => x.Value)
-            .ToList();
+        return GetAllPermissions().SelectMany(x => x.Value).ToList();
     }
 }
+

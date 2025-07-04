@@ -1,6 +1,6 @@
 ﻿namespace AliyewShop.Application.DTOs.ProductDtos;
 
-public class ProductUpdateDto
+public record class ProductUpdateDto
 {
     public Guid Id { get; set; }  // Yenilənəcək məhsulun ID-si
     public string Title { get; set; } = null!;

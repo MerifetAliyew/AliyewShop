@@ -1,6 +1,6 @@
 ﻿namespace AliyewShop.Application.DTOs.ProductDtos;
 
-public class ProductGetDto
+public record class ProductGetDto
 {
     public Guid Id { get; set; }
     public string Title { get; set; } = null!;

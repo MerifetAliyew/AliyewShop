@@ -1,6 +1,6 @@
 ﻿namespace AliyewShop.Application.DTOs.OrderProductDtos;
 
-public class OrderProductGetDto
+public record class OrderProductGetDto
 {
     public Guid ProductId { get; set; }
     public int ProductCount { get; set; }

@@ -10,4 +10,6 @@ public interface IUserService
     Task<BaseResponse<TokenResponse>> RefreshTokenAsync(RefreshTokenRequest request);
     Task<BaseResponse<string>> AddRole(UserAddRoleDto dto);
     Task<BaseResponse<string>> ConfirmEmail(string userId, string token);
+    Task<BaseResponse<string>> ResetPasswordAsync(UserResetPasswordDto dto);
+    Task<BaseResponse<string>> SendResetPasswordEmailAsync(string email);
 }

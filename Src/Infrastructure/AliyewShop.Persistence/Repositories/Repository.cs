@@ -24,6 +24,11 @@ public class Repository<T> : IRepository<T> where T : BaseEntity, new()
         await Table.AddAsync(entity);
     }
 
+    public async Task<List<T>> GetAllAsync()
+    {
+        return await Table.ToListAsync();
+    }
+
     public void Update(T entity)
     {
         Table.Update(entity);

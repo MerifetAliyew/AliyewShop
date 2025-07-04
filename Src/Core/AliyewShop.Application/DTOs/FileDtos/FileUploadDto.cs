@@ -2,7 +2,7 @@
 
 namespace AliyewShop.Application.DTOs.FileDtos;
 
-public class FileUploadDto
+public record class FileUploadDto
 {
     public IFormFile UploadFile { get; set; } = null!;
 }

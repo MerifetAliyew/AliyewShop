@@ -2,6 +2,7 @@
 using AliyewShop.Application.Abstracts.Services;
 using AliyewShop.Application.DTOs.RoleDtos;
 using AliyewShop.Application.Shared;
+using AliyewShop.Application.Shared.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -29,5 +30,12 @@ public class RolesController : ControllerBase
         return StatusCode((int)result.StatusCode, result);
     }
 
+    [HttpGet("permissions")]
 
+    public IActionResult GetAllPermissions()
+    {
+        var permissions = PermissionHelper.GetAllPermissions();
+        return Ok(permissions);
+
+    }
 }
