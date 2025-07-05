@@ -20,10 +20,11 @@ public class Order : BaseEntity
     public string? Progress { get; set; } 
 
     // Alıcının və ya adminin sifarişə əlavə etdiyi qeyd
-    public string? InternalNote { get; set; } 
-    public string UserId { get; set; }
-    public AppUser User { get; set; }
+    public string? InternalNote { get; set; }
+    public string? UserId { get; set; }  // DB-dəki sütunla uyğun olsun
+    public AppUser? User { get; set; }
 
     // Bu sifarişdə hansı məhsullar var
     public ICollection<OrderProduct> OrderDetails { get; set; }
+    public ICollection<OrderProduct> OrderProducts { get; set; }
 }

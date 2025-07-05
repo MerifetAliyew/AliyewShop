@@ -30,6 +30,8 @@ public static class ServiceRegistration
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IFavouriteRepository, FavouriteRepository>();
+        services.AddScoped<IOrderService, OrderService>();
         #endregion
 
 

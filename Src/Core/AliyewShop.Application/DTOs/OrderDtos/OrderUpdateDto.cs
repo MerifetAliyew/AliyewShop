@@ -2,6 +2,6 @@
 
 public record class OrderUpdateDto
 {
-    public string? Progress { get; set; }
-    public string? InternalNote { get; set; }
+    public Guid Id { get; set; }
+    public string UserId { get; set; }
 }

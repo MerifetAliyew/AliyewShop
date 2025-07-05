@@ -1,4 +1,6 @@
-﻿using AliyewShop.Application.DTOs.CategoryDtos;
+﻿using System.Threading.Tasks;
+using AliyewShop.Application.DTOs.CategoryDtos;
+using AliyewShop.Application.DTOs.OrderDtos;
 using AliyewShop.Application.Shared;
 
 namespace AliyewShop.Application.Abstracts.Services;
@@ -18,4 +20,6 @@ public interface ICategoryService
     Task<BaseResponse<List<CategoryGetDto>>> GetAllAsync();
 
     Task<BaseResponse<List<CategoryGetDto>>> GetByNameSearchAsync(string namePart);
+    Task<BaseResponse<List<CategoryTreeDto>>> GetCategoryTreeAsync();
 }
+    

@@ -18,6 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using AliyewShop.Application.Abstracts.Services;
 using AliyewShop.Infrastructure.Services;
+using AliyewShop.Application.Abstracts.Mapping;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,6 +29,9 @@ builder.Services.AddControllers();
 builder.Services.AddValidatorsFromAssembly(typeof(ProductCreateDtoValidator).Assembly);
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

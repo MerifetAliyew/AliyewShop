@@ -4,6 +4,7 @@ using AliyewShop.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AliyewShop.Persistence.Migrations
 {
     [DbContext(typeof(AliyewShopDbContext))]
-    partial class AliyewShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250705142305_Test13")]
+    partial class Test13
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -240,6 +243,7 @@ namespace AliyewShop.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -592,7 +596,8 @@ namespace AliyewShop.Persistence.Migrations
                     b.HasOne("AliyewShop.Domain.Entities.AppUser", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

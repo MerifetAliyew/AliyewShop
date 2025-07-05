@@ -4,6 +4,7 @@ using AliyewShop.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AliyewShop.Persistence.Migrations
 {
     [DbContext(typeof(AliyewShopDbContext))]
-    partial class AliyewShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250704210442_Test8")]
+    partial class Test8
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -240,6 +243,7 @@ namespace AliyewShop.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -264,9 +268,6 @@ namespace AliyewShop.Persistence.Migrations
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("OrderId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("ProductCount")
                         .HasColumnType("int");
 
@@ -285,8 +286,6 @@ namespace AliyewShop.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
-
-                    b.HasIndex("OrderId1");
 
                     b.HasIndex("ProductId");
 
@@ -335,10 +334,6 @@ namespace AliyewShop.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SellerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Size")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -361,8 +356,6 @@ namespace AliyewShop.Persistence.Migrations
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("OwnerId");
-
-                    b.HasIndex("SellerId");
 
                     b.ToTable("Products", (string)null);
                 });
@@ -592,7 +585,8 @@ namespace AliyewShop.Persistence.Migrations
                     b.HasOne("AliyewShop.Domain.Entities.AppUser", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -604,10 +598,6 @@ namespace AliyewShop.Persistence.Migrations
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("AliyewShop.Domain.Entities.Order", null)
-                        .WithMany("OrderProducts")
-                        .HasForeignKey("OrderId1");
 
                     b.HasOne("AliyewShop.Domain.Entities.Product", "Product")
                         .WithMany("OrderProducts")
@@ -634,17 +624,9 @@ namespace AliyewShop.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AliyewShop.Domain.Entities.AppUser", "Seller")
-                        .WithMany()
-                        .HasForeignKey("SellerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Category");
 
                     b.Navigation("Owner");
-
-                    b.Navigation("Seller");
                 });
 
             modelBuilder.Entity("AliyewShop.Domain.Entities.Review", b =>
@@ -738,8 +720,6 @@ namespace AliyewShop.Persistence.Migrations
             modelBuilder.Entity("AliyewShop.Domain.Entities.Order", b =>
                 {
                     b.Navigation("OrderDetails");
-
-                    b.Navigation("OrderProducts");
                 });
 
             modelBuilder.Entity("AliyewShop.Domain.Entities.Product", b =>

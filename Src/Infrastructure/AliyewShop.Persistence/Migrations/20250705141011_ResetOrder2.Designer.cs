@@ -4,6 +4,7 @@ using AliyewShop.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AliyewShop.Persistence.Migrations
 {
     [DbContext(typeof(AliyewShopDbContext))]
-    partial class AliyewShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250705141011_ResetOrder2")]
+    partial class ResetOrder2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,6 +208,11 @@ namespace AliyewShop.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("BuyerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("UserId");
+
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -240,13 +248,20 @@ namespace AliyewShop.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BuyerId");
+
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders", null, t =>
+                        {
+                            t.Property("UserId")
+                                .HasColumnName("UserId1");
+                        });
                 });
 
             modelBuilder.Entity("AliyewShop.Domain.Entities.OrderProduct", b =>
@@ -589,10 +604,19 @@ namespace AliyewShop.Persistence.Migrations
 
             modelBuilder.Entity("AliyewShop.Domain.Entities.Order", b =>
                 {
+                    b.HasOne("AliyewShop.Domain.Entities.AppUser", "Buyer")
+                        .WithMany()
+                        .HasForeignKey("BuyerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("AliyewShop.Domain.Entities.AppUser", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Buyer");
 
                     b.Navigation("User");
                 });

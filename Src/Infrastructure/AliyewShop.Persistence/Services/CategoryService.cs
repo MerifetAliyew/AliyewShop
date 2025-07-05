@@ -140,4 +140,36 @@ public class CategoryService : ICategoryService
         await _categoryRepository.SaveChangeAsync();
         return new BaseResponse<CategoryUpdateDto>("Category updated successfully", dto, HttpStatusCode.OK);
     }
+
+    public async Task<BaseResponse<List<CategoryTreeDto>>> GetCategoryTreeAsync()
+    {
+        var allCategories = await _categoryRepository
+            .GetAll(true)
+            .Include(c => c.SubCategories)
+            .ToListAsync();
+
+        var mainCategories = allCategories
+            .Where(c => c.ParentCategoryId == null)
+            .ToList();
+
+        var treeList = mainCategories
+            .Select(main => BuildTree(main, allCategories))
+            .ToList();
+
+        return new BaseResponse<List<CategoryTreeDto>>("Kateqoriyalar ağacı uğurla yaradıldı", treeList, HttpStatusCode.OK);
+    }
+
+    private CategoryTreeDto BuildTree(Category category, List<Category> allCategories)
+    {
+        return new CategoryTreeDto
+        {
+            Id = category.Id,
+            Name = category.Name,
+            Description = category.Description,
+            SubCategories = allCategories
+                .Where(sub => sub.ParentCategoryId == category.Id)
+                .Select(sub => BuildTree(sub, allCategories))
+                .ToList()
+        };
+    }
 }

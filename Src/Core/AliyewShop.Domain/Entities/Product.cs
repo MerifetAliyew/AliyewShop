@@ -38,6 +38,8 @@ public class Product : BaseEntity
     public string OwnerId { get; set; }
     public AppUser Owner { get; set; }
 
+    public string SellerId { get; set; }   // 🔥 UserId kimi olacaq
+    public AppUser Seller { get; set; }
     // Məhsula aid şəkillər
     public ICollection<Image> Images { get; set; }
 
@@ -49,4 +51,5 @@ public class Product : BaseEntity
 
     // Sifarişlərlə olan əlaqə
     public ICollection<OrderProduct> OrderProducts { get; set; }
+
 }

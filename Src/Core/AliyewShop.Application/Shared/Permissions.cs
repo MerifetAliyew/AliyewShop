@@ -4,17 +4,17 @@ public static class Permissions
 {
     public static class Category
     {
-        public const string SubCreate = "Category.SubCreate";
-        public const string MainCreate = "Category.MainCreate";
+        public const string Create = "Category.Create";
         public const string Update = "Category.Update";
         public const string Delete = "Category.Delete";
+        public const string View = "Category.View";
 
         public static List<string> All = new List<string>
         {
+            Create,
             Update,
             Delete,
-            MainCreate,
-            SubCreate
+            View
         };
     }
     public static class Role
