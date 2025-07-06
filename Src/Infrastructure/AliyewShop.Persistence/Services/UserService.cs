@@ -11,6 +11,7 @@ using AliyewShop.Application.Shared.Settings;
 using AliyewShop.Domain.Entities;
 using AliyewShop.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -323,5 +324,53 @@ public class UserService : IUserService
             $"Please reset your password by clicking {resetLink}");
 
         return new BaseResponse<string>("Password reset link has been sent to your email.", HttpStatusCode.OK);
+    }
+
+    public async Task<BaseResponse<List<UserGetDto>>> GetAllUsersAsync()
+    {
+        var users = await _userManager.Users
+            .Select(u => new UserGetDto
+            {
+                Id = u.Id,
+                UserName = u.UserName,
+                Email = u.Email
+            })
+            .ToListAsync();
+
+        return new BaseResponse<List<UserGetDto>>("İstifadəçilər tapıldı", users, HttpStatusCode.OK);
+    }
+
+    public async Task<BaseResponse<UserGetDto>> GetUserByIdAsync(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null)
+            return new BaseResponse<UserGetDto>("İstifadəçi tapılmadı", HttpStatusCode.NotFound);
+
+        var dto = new UserGetDto
+        {
+            Id = user.Id,
+            UserName = user.UserName,
+            Email = user.Email
+        };
+
+        return new BaseResponse<UserGetDto>("İstifadəçi tapıldı", dto, HttpStatusCode.OK);
+    }
+
+    public async Task<BaseResponse<UserProfileDto>> GetMyProfileAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return new BaseResponse<UserProfileDto>("İstifadəçi tapılmadı", HttpStatusCode.NotFound);
+
+        var profile = new UserProfileDto
+        {
+            Id = user.Id,
+            UserName = user.UserName,
+            Email = user.Email,
+            FullName = user.Fullname,
+        };
+
+        return new BaseResponse<UserProfileDto>("Profil məlumatları", profile, HttpStatusCode.OK);
+
     }
 }

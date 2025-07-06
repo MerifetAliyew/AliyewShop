@@ -32,6 +32,9 @@ public static class ServiceRegistration
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IFavouriteRepository, FavouriteRepository>();
         services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IOrderProductService, OrderProductService>();
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IFavouriteRepository, FavouriteRepository>();
         #endregion
 
 

@@ -11,6 +11,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using static AliyewShop.Application.Shared.Permissions;
+using AliyewShop.Domain.Entities;
 
 namespace AliyewShop.Persistence.Services;
 
@@ -18,127 +19,41 @@ public class FavouriteService : IFavouriteService
 {
     private readonly IFavouriteRepository _favouriteRepository;
     private readonly IMapper _mapper;
-    private readonly IProductRepository _productRepository; // Məhsul yoxlamaq üçün (əgər varsa)
 
-    public FavouriteService(
-        IFavouriteRepository favouriteRepository,
-        IMapper mapper,
-        IProductRepository productRepository)
+    public FavouriteService(IFavouriteRepository favouriteRepository, IMapper mapper)
     {
         _favouriteRepository = favouriteRepository;
         _mapper = mapper;
-        _productRepository = productRepository;
     }
 
-    public async Task<BaseResponse<string>> AddAsync(string userId, FavouriteCreateDto dto)
+    public async Task<BaseResponse<string>> AddToFavouriteAsync(string userId, FavouriteCreateDto dto)
     {
-        var productExists = await _productRepository.GetByIdAsync(dto.ProductId);
-        if (productExists == null)
-        {
-            return new BaseResponse<string>("Məhsul tapılmadı", null, HttpStatusCode.NotFound);
-        }
-
-        var alreadyExists = await _favouriteRepository.GetByFiltered(f =>
-            f.UserId == userId && f.ProductId == dto.ProductId).FirstOrDefaultAsync();
-
-        if (alreadyExists != null)
-        {
-            return new BaseResponse<string>("Bu məhsul artıq favorilərinizdədir", null, HttpStatusCode.BadRequest);
-        }
-
-        var favourite = new Favourite
-        {
-            UserId = userId,
-            ProductId = dto.ProductId
-        };
+        var favourite = _mapper.Map<Favourite>(dto);
+        favourite.UserId = userId;
 
         await _favouriteRepository.AddAsync(favourite);
         await _favouriteRepository.SaveChangeAsync();
 
-        return new BaseResponse<string>("Favoritə əlavə edildi", HttpStatusCode.Created);
+        return new BaseResponse<string>("Məhsul favoritlərə əlavə edildi", HttpStatusCode.Created);
     }
 
-    public async Task<BaseResponse<string>> DeleteAsync(Guid id)
+    public async Task<BaseResponse<List<FavouriteGetDto>>> GetMyFavouritesAsync(string userId)
     {
-        var fav = await _favouriteRepository.GetByIdAsync(id);
-        if (fav == null)
-        {
-            return new BaseResponse<string>("Favorit tapılmadı", null, HttpStatusCode.NotFound);
-        }
+        var favourites = await _favouriteRepository.GetFavouritesByUserIdAsync(userId);
+        var dtos = _mapper.Map<List<FavouriteGetDto>>(favourites);
 
-        _favouriteRepository.Delete(fav);
-        await _favouriteRepository.SaveChangeAsync();
-
-        return new BaseResponse<string>("Favorit uğurla silindi", HttpStatusCode.OK);
+        return new BaseResponse<List<FavouriteGetDto>>("Sevimlilər siyahısı", dtos, HttpStatusCode.OK);
     }
 
-    public async Task<BaseResponse<List<FavouriteGetDto>>> GetAllAsync()
+    public async Task<BaseResponse<string>> RemoveFromFavouriteAsync(string userId, Guid productId)
     {
-        var favorites = await _favouriteRepository.GetAll()
-            .Include(f => f.Product)
-            .ThenInclude(p => p.Images)
-            .ToListAsync();
-
-        if (!favorites.Any())
-        {
-            return new BaseResponse<List<FavouriteGetDto>>("Favorilər tapılmadı", null, HttpStatusCode.NotFound);
-        }
-
-        var dtos = _mapper.Map<List<FavouriteGetDto>>(favorites);
-        return new BaseResponse<List<FavouriteGetDto>>("Data", dtos, HttpStatusCode.OK);
-    }
-
-    public async Task<BaseResponse<FavouriteGetDto>> GetByIdAsync(Guid id)
-    {
-        var favorite = await _favouriteRepository.GetByIdAsync(id);
-        if (favorite is null)
-        {
-            return new BaseResponse<FavouriteGetDto>("Favori tapılmadı", HttpStatusCode.NotFound);
-        }
-
-        var dto = _mapper.Map<FavouriteGetDto>(favorite);
-        return new BaseResponse<FavouriteGetDto>("Data", dto, HttpStatusCode.OK);
-    }
-
-    public async Task<BaseResponse<List<FavouriteGetDto>>> GetByNameAsync(string search)
-    {
-        return new BaseResponse<List<FavouriteGetDto>>("Ad əsasında axtarış yoxdur", null, HttpStatusCode.BadRequest);
-    }
-
-    public async Task<BaseResponse<List<FavouriteGetDto>>> GetByNameSearchAsync(string namePart)
-    {
-        return new BaseResponse<List<FavouriteGetDto>>("Ad ilə axtarış dəstəklənmir", null, HttpStatusCode.BadRequest);
-    }
-
-    public async Task<BaseResponse<List<FavouriteGetDto>>> GetByUserIdAsync(string userId)
-    {
-        var favs = await _favouriteRepository
-            .GetByFiltered(
-                f => f.UserId == userId,
-                new Expression<Func<Favourite, object>>[] { f => f.Product }
-            )
-            .ToListAsync();
-
-        if (!favs.Any())
-            return new BaseResponse<List<FavouriteGetDto>>("Favorit tapılmadı", null, HttpStatusCode.NotFound);
-
-        var dtos = _mapper.Map<List<FavouriteGetDto>>(favs);
-        return new BaseResponse<List<FavouriteGetDto>>("Favoritlər tapıldı", dtos, HttpStatusCode.OK);
-    }
-
-    public async Task<BaseResponse<string>> RemoveAsync(string userId, FavouriteRemoveDto dto)
-    {
-        var favourite = await _favouriteRepository.GetByFiltered(f =>
-    f.UserId == userId && f.ProductId == dto.ProductId).FirstOrDefaultAsync();
-
+        var favourite = await _favouriteRepository.GetFavouriteByUserIdAndProductIdAsync(userId, productId);
         if (favourite == null)
-        {
-            return new BaseResponse<string>("Favorit tapılmadı", null, HttpStatusCode.NotFound);
-        }
+            return new BaseResponse<string>("Sevimli məhsul tapılmadı", HttpStatusCode.NotFound);
 
         _favouriteRepository.Delete(favourite);
         await _favouriteRepository.SaveChangeAsync();
 
-        return new BaseResponse<string>("Favoritdən silindi", HttpStatusCode.OK);
+        return new BaseResponse<string>("Sevimli məhsul silindi", HttpStatusCode.OK);
     }
 }

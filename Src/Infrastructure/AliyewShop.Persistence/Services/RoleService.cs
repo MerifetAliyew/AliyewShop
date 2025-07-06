@@ -52,5 +52,23 @@ public class RoleService : IRoleService
 
         return new BaseResponse<string?>("Role created successfully", true, HttpStatusCode.Created);
     }
+
+    public async Task<BaseResponse<string>> DeleteRoleAsync(string roleName)
+    {
+        var role = await _roleManager.FindByNameAsync(roleName);
+        if (role == null)
+        {
+            return new BaseResponse<string>($"Role '{roleName}' tapılmadı.", HttpStatusCode.NotFound);
+        }
+
+        var result = await _roleManager.DeleteAsync(role);
+        if (!result.Succeeded)
+        {
+            var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+            return new BaseResponse<string>($"Role silinə bilmədi: {errors}", HttpStatusCode.BadRequest);
+        }
+
+        return new BaseResponse<string>("Role uğurla silindi.", true, HttpStatusCode.OK);
+    }
 }
 

@@ -22,9 +22,10 @@ public class CategoriesController : ControllerBase
 
     // POST api/categories
     [HttpPost]
-    [Authorize(Policy = Permissions.Category.Create)] // lazım olsa, yoxdursa sil
-    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.Created)]
+    [Authorize(Policy = Permissions.Category.Create)]
+    [ProducesResponseType(typeof(BaseResponse<CategoryUpdateDto>), (int)HttpStatusCode.Created)]
     [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.InternalServerError)]
     public async Task<IActionResult> Post([FromBody] CategoryCreateDto dto)
     {
         var result = await _categoryService.AddAsync(dto);
@@ -33,7 +34,6 @@ public class CategoriesController : ControllerBase
 
     // PUT api/categories/{id}
     [HttpPut("{id}")]
-    [Authorize(Policy = Permissions.Category.Update)] // lazım olsa
     [ProducesResponseType(typeof(BaseResponse<CategoryUpdateDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.NotFound)]
@@ -60,7 +60,7 @@ public class CategoriesController : ControllerBase
 
     // DELETE api/categories/{id}
     [HttpDelete("{id}")]
-    [Authorize(Policy = Permissions.Category.Delete)] // lazım olsa
+    [Authorize(Policy = Permissions.Category.Delete)]
     [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.NotFound)]
     public async Task<IActionResult> Delete(Guid id)

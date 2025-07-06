@@ -3,6 +3,7 @@ using AliyewShop.Application.Abstracts.Services;
 using AliyewShop.Application.DTOs.RoleDtos;
 using AliyewShop.Application.Shared;
 using AliyewShop.Application.Shared.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -36,6 +37,15 @@ public class RolesController : ControllerBase
     {
         var permissions = PermissionHelper.GetAllPermissions();
         return Ok(permissions);
-
     }
+
+    [HttpDelete("{roleName}")]
+    [Authorize(Policy = "RequireAdminRole")]
+    public async Task<IActionResult> DeleteRole(string roleName)
+    {
+        var response = await _roleService.DeleteRoleAsync(roleName);
+        return StatusCode((int)response.StatusCode, response);
+    }
+
+
 }

@@ -3,6 +3,7 @@ using AliyewShop.Application.DTOs.FavouriteDtos;
 using AliyewShop.Application.Shared;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,60 +14,41 @@ namespace AliyewShop.WebApi.Controllers;
 public class FavouritesController : ControllerBase
 {
     private readonly IFavouriteService _favouriteService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public FavouritesController(IFavouriteService favouriteService)
+    public FavouritesController(IFavouriteService favouriteService, IHttpContextAccessor httpContextAccessor)
     {
         _favouriteService = favouriteService;
+        _httpContextAccessor = httpContextAccessor;
     }
 
-    [HttpPost("add")]
-    public async Task<IActionResult> AddFavourite([FromQuery] string userId, [FromBody] FavouriteCreateDto dto)
+    [HttpPost]
+    public async Task<IActionResult> AddToFavourite(Guid productId)
     {
-        if (string.IsNullOrEmpty(userId))
-            return BadRequest(new BaseResponse<string>("UserId boş ola bilməz", null, HttpStatusCode.BadRequest));
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null) return Unauthorized();
 
-        var response = await _favouriteService.AddAsync(userId, dto);
-        return StatusCode((int)response.StatusCode, response);
+        var result = await _favouriteService.AddToFavouriteAsync(userId, new FavouriteCreateDto { ProductId = productId });
+        return StatusCode((int)result.StatusCode, result);
     }
 
-    [HttpDelete("delete/{id:guid}")]
-    public async Task<IActionResult> DeleteFavourite(Guid id)
+    [HttpDelete]
+    public async Task<IActionResult> RemoveFromFavourite(Guid productId)
     {
-        var response = await _favouriteService.DeleteAsync(id);
-        return StatusCode((int)response.StatusCode, response);
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null) return Unauthorized();
+
+        var result = await _favouriteService.RemoveFromFavouriteAsync(userId, productId);
+        return StatusCode((int)result.StatusCode, result);
     }
 
-    [HttpGet("all")]
-    public async Task<IActionResult> GetAllFavourites()
+    [HttpGet]
+    public async Task<IActionResult> GetMyFavourites()
     {
-        var response = await _favouriteService.GetAllAsync();
-        return StatusCode((int)response.StatusCode, response);
-    }
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null) return Unauthorized();
 
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetFavouriteById(Guid id)
-    {
-        var response = await _favouriteService.GetByIdAsync(id);
-        return StatusCode((int)response.StatusCode, response);
-    }
-
-    [HttpGet("user")]
-    public async Task<IActionResult> GetFavouritesByUser([FromQuery] string userId)
-    {
-        if (string.IsNullOrEmpty(userId))
-            return BadRequest(new BaseResponse<string>("UserId boş ola bilməz", null, HttpStatusCode.BadRequest));
-
-        var response = await _favouriteService.GetByUserIdAsync(userId);
-        return StatusCode((int)response.StatusCode, response);
-    }
-
-    [HttpPost("remove")]
-    public async Task<IActionResult> RemoveFavourite([FromQuery] string userId, [FromBody] FavouriteRemoveDto dto)
-    {
-        if (string.IsNullOrEmpty(userId))
-            return BadRequest(new BaseResponse<string>("UserId boş ola bilməz", null, HttpStatusCode.BadRequest));
-
-        var response = await _favouriteService.RemoveAsync(userId, dto);
-        return StatusCode((int)response.StatusCode, response);
+        var result = await _favouriteService.GetMyFavouritesAsync(userId);
+        return Ok(result);
     }
 }

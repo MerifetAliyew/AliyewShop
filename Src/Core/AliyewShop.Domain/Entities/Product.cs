@@ -51,5 +51,4 @@ public class Product : BaseEntity
 
     // Sifarişlərlə olan əlaqə
     public ICollection<OrderProduct> OrderProducts { get; set; }
-
 }

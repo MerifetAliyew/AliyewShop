@@ -26,20 +26,25 @@ public class CategoryService : ICategoryService
     }
     public async Task<BaseResponse<string>> AddAsync(CategoryCreateDto dto)
     {
-        var categoryDb = await _categoryRepository
-    .GetByFiltered(c => c.Name.Trim().ToLower() == dto.Name.Trim().ToLower())
-    .FirstOrDefaultAsync();
-        if (categoryDb is not null)
+        if (dto.ParentCategoryId.HasValue)
         {
-            return new BaseResponse<string>("This category already exist", (string)null, HttpStatusCode.BadRequest);
+            var parentExists = await _categoryRepository.GetByIdAsync(dto.ParentCategoryId.Value);
+            if (parentExists == null)
+            {
+                return new BaseResponse<string>("Parent category mövcud deyil", HttpStatusCode.BadRequest);
+            }
         }
 
-        Category category = _mapper.Map<Category>(dto);//mapper
-
+        var category = new Category
+        {
+            Name = dto.Name,
+            ParentCategoryId = dto.ParentCategoryId
+        };
 
         await _categoryRepository.AddAsync(category);
         await _categoryRepository.SaveChangeAsync();
-        return new BaseResponse<string>(HttpStatusCode.Created);
+
+        return new BaseResponse<string>("Kateqoriya uğurla yaradıldı", true, HttpStatusCode.Created);
     }
 
     public async Task<BaseResponse<string>> DeleteAsync(Guid id)

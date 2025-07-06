@@ -1,7 +1,9 @@
 ﻿using System.Net;
+using System.Security.Claims;
 using AliyewShop.Application.Abstracts.Services;
 using AliyewShop.Application.DTOs.UserDtos;
 using AliyewShop.Application.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -50,17 +52,6 @@ public class AccountsController : ControllerBase
         return StatusCode((int)result.StatusCode, result);
     }
 
-    [HttpPost("assign-roles")]
-    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.NotFound)]
-    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.InternalServerError)]
-    public async Task<IActionResult> AddRole([FromBody] UserAddRoleDto dto)
-    {
-        var result = await _userService.AddRole(dto); 
-        return StatusCode((int)result.StatusCode, result);
-    }
-
     [HttpGet("confirm-email")]
     [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.NotFound)]
@@ -99,5 +90,34 @@ public class AccountsController : ControllerBase
             return StatusCode((int)result.StatusCode, result);
         }
         return Ok(result.Message);
+    }
+
+    // GET /api/users  (yalnız Admin)
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        var result = await _userService.GetAllUsersAsync();
+        return StatusCode((int)result.StatusCode, result);
+    }
+
+    // GET /api/users/{id}
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetUserById(string id)
+    {
+        var result = await _userService.GetUserByIdAsync(id);
+        return StatusCode((int)result.StatusCode, result);
+    }
+
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<IActionResult> GetMyProfile()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+            return Unauthorized(new { Message = "Token düzgün deyil və ya istifadəçi tapılmadı." });
+
+        var result = await _userService.GetMyProfileAsync(userId);
+        return StatusCode((int)result.StatusCode, result);
     }
 }

@@ -17,82 +17,76 @@ namespace AliyewShop.WebApi.Controllers;
 public class OrdersController : ControllerBase
 {
     private readonly IOrderService _orderService;
+    private readonly ILogger<OrdersController> _logger;
 
-    public OrdersController(IOrderService orderService)
+    public OrdersController(IOrderService orderService, ILogger<OrdersController> logger)
     {
         _orderService = orderService;
+        _logger = logger;
     }
 
+    // POST /api/orders
     [HttpPost]
-    //[Authorize(Policy = Permissions.Order.Create)]
-    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.Created)]
-    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> Create([FromBody] OrderCreateDto dto)
+    [Authorize(Roles = "Buyer")]  // Yalnız Buyer rolundakılar sifariş yarada bilər
+    public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDto dto)
     {
-        var response = await _orderService.CreateAsync(dto);
-        return StatusCode((int)response.StatusCode, response);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+            return Unauthorized();
+
+        var result = await _orderService.CreateOrderAsync(userId, dto);
+
+        if (!result.Success)
+            return BadRequest(result);
+
+        return StatusCode((int)result.StatusCode, result);
     }
 
+    // GET /api/orders/my
     [HttpGet("my")]
-    [Authorize(Policy = Permissions.Order.GetMy)]
-    [ProducesResponseType(typeof(BaseResponse<List<OrderGetDto>>), (int)HttpStatusCode.OK)]
+    [Authorize(Roles = "Buyer")]  // Buyer öz sifarişlərini görür
     public async Task<IActionResult> GetMyOrders()
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized(new BaseResponse<string>("Token etibarsızdır", HttpStatusCode.Unauthorized));
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+            return Unauthorized();
 
-        var response = await _orderService.GetByUserIdAsync(userId);
-        return StatusCode((int)response.StatusCode, response);
+        var result = await _orderService.GetMyOrdersAsync(userId);
+        return Ok(result);
     }
 
+    // GET /api/orders/my-sales
     [HttpGet("my-sales")]
-    [Authorize(Policy = Permissions.Order.GetMySales)]
-    [ProducesResponseType(typeof(BaseResponse<List<OrderGetDto>>), (int)HttpStatusCode.OK)]
+    [Authorize(Roles = "Seller")]  // Seller öz məhsullarının satışlarını görür
     public async Task<IActionResult> GetMySales()
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized(new BaseResponse<string>("Token etibarsızdır", HttpStatusCode.Unauthorized));
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+            return Unauthorized();
 
-        // Seller üçün ayrıca method (məs: _orderRepository.GetOrdersForSellerAsync(userId)) yazılmalıdır.
-        var response = await _orderService.GetMySalesAsync(userId);
-        return StatusCode((int)response.StatusCode, response);
+        var result = await _orderService.GetMySalesAsync(userId);
+        return Ok(result);
     }
 
-    [HttpGet("{id}")]
-    [Authorize(Policy = Permissions.Order.GetDetail)]
-    [ProducesResponseType(typeof(BaseResponse<OrderGetDto>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetById(Guid id)
+    // GET /api/orders/{id}
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetOrderById(Guid id)
     {
-        var response = await _orderService.GetByIdAsync(id);
-        return StatusCode((int)response.StatusCode, response);
-    }
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId == null)
+            return Unauthorized();
 
-    [HttpPut]
-    [Authorize(Policy = Permissions.Order.Update)]
-    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> Update([FromBody] OrderUpdateDto dto)
-    {
-        var response = await _orderService.UpdateAsync(dto);
-        return StatusCode((int)response.StatusCode, response);
-    }
+        var result = await _orderService.GetOrderByIdAsync(userId, id);
 
-    [HttpDelete("{id}")]
-    [Authorize(Policy = Permissions.Order.Delete)]
-    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> Delete(Guid id)
-    {
-        var response = await _orderService.DeleteAsync(id);
-        return StatusCode((int)response.StatusCode, response);
-    }
+        if (!result.Success)
+        {
+            if (result.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return NotFound(result);
+            if (result.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                return Forbid();
+            return BadRequest(result);
+        }
 
-    [HttpGet]
-    [Authorize(Policy = Permissions.Order.GetAll)]
-    [ProducesResponseType(typeof(BaseResponse<List<OrderGetDto>>), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> GetAll()
-    {
-        var response = await _orderService.GetAllAsync();
-        return StatusCode((int)response.StatusCode, response);
+        return Ok(result);
     }
 }
