@@ -7,19 +7,17 @@ public class OrderCreateDtoValidator : AbstractValidator<OrderCreateDto>
 {
     public OrderCreateDtoValidator()
     {
-        RuleFor(o => o.ShippingAddress)
-            .NotEmpty().WithMessage("Çatdırılma ünvanı mütləqdir.")
-            .MaximumLength(1000).WithMessage("Çatdırılma ünvanı 1000 simvoldan çox ola bilməz.");
+        RuleFor(x => x.ProductIds)
+            .NotEmpty().WithMessage("Məhsul siyahısı boş ola bilməz.")
+            .Must(list => list.All(id => id != Guid.Empty))
+            .WithMessage("Məhsul ID-ləri düzgün olmalıdır.");
 
-        RuleFor(o => o.PaymentType)
-            .NotEmpty().WithMessage("Ödəniş növü mütləqdir.")
-            .MaximumLength(100).WithMessage("Ödəniş növü 100 simvoldan çox ola bilməz.");
+        RuleFor(x => x.PaymentType)
+            .NotEmpty().WithMessage("Ödəniş üsulu daxil edilməlidir.")
+            .MaximumLength(100).WithMessage("Ödəniş üsulu 100 simvoldan artıq ola bilməz.");
 
-        RuleFor(o => o.InternalNote)
-            .MaximumLength(1000).WithMessage("Daxili qeyd 1000 simvoldan çox ola bilməz.")
-            .When(o => !string.IsNullOrEmpty(o.InternalNote));
-
-        RuleFor(o => o.ProductIds)
-            .NotEmpty().WithMessage("Sifarişdə ən azı bir məhsul olmalıdır.");
+        RuleFor(x => x.ShipToAddress)
+            .NotEmpty().WithMessage("Çatdırılma ünvanı daxil edilməlidir.")
+            .MaximumLength(500).WithMessage("Çatdırılma ünvanı 500 simvoldan artıq ola bilməz.");
     }
 }

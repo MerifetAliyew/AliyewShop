@@ -2,5 +2,5 @@
 
 public record class FavouriteCreateDto
 {
-    public Guid ProductId { get; set; } // Hansı məhsul favori edilir
+    public Guid ProductId { get; set; }
 }

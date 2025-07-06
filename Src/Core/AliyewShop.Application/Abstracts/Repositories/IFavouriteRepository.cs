@@ -4,5 +4,6 @@ namespace AliyewShop.Application.Abstracts.Repositories;
 
 public interface IFavouriteRepository : IRepository<Favourite>
 {
-    Task<List<Favourite>> GetByAdIdAsync(Guid adId);
+    Task<List<Favourite>> GetFavouritesByUserIdAsync(string userId);
+    Task<Favourite?> GetFavouriteByUserIdAndProductIdAsync(string userId, Guid productId);
 }

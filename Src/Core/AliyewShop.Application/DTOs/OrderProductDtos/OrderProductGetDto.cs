@@ -2,9 +2,12 @@
 
 public record class OrderProductGetDto
 {
-    public Guid ProductId { get; set; }
+    public Guid Id { get; set; }
     public int ProductCount { get; set; }
+    public string ProductTitle { get; set; } = null!;
     public decimal ProductPrice { get; set; }
-    public string ProductTitle { get; set; } // Məhsulun adı (Product.Title-dan)
-    public string? ProductImageUrl { get; set; } // Əgər varsa ilk şəkil URL-i
+    public Guid OrderId { get; set; }
+    public Guid ProductId { get; set; }
+    public string? ProductName { get; set; }
+    public string? OrderNumber { get; set; }
 }

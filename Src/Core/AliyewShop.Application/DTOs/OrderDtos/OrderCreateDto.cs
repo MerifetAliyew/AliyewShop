@@ -2,9 +2,7 @@
 
 public record class OrderCreateDto
 {
-    public string UserId { get; set; }
-    public string ShippingAddress { get; set; } = null!;
-    public string PaymentType { get; set; } = null!;
-    public string? InternalNote { get; set; }
-    public List<Guid> ProductIds { get; set; } = new();
+    public List<Guid> ProductIds { get; set; } = new(); // Birdən çox məhsul sifariş edilə bilər
+    public string? PaymentType { get; set; }
+    public string? ShipToAddress { get; set; }
 }

@@ -2,7 +2,8 @@
 
 public record class OrderProductCreateDto
 {
-    public Guid ProductId { get; set; }     // Məhsulun ID-si
-    public int ProductCount { get; set; }   // Məhsul sayı
-    public decimal ProductPrice { get; set; } // Məhsulun qiyməti (sifariş vaxtı qiymət)
+    public int ProductCount { get; set; }
+    public decimal ProductPrice { get; set; }
+    public Guid OrderId { get; set; }
+    public Guid ProductId { get; set; }
 }

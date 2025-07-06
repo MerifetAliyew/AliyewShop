@@ -2,10 +2,9 @@
 
 public record class FavouriteGetDto
 {
-    public Guid Id { get; set; } // Favoritin öz ID-si
     public Guid ProductId { get; set; }
-    public string ProductTitle { get; set; }
-    public string? ProductImageUrl { get; set; } = null;
-    public decimal Price { get; set; }
+    public string ProductTitle { get; set; } = null!;
+    public decimal ProductPrice { get; set; }
+    public List<string> ImageUrls { get; set; } = new();
     public DateTime CreatedAt { get; set; }
 }

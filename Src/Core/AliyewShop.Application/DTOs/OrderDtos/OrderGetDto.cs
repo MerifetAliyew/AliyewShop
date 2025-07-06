@@ -8,4 +8,5 @@ public record class OrderGetDto
     public string? ShipToAddress { get; set; }
     public decimal? GrandTotal { get; set; }
     public string? Progress { get; set; }
+    public List<OrderProductDto> OrderProducts { get; set; } = new();
 }

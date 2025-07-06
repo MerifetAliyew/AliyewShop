@@ -12,4 +12,7 @@ public interface IUserService
     Task<BaseResponse<string>> ConfirmEmail(string userId, string token);
     Task<BaseResponse<string>> ResetPasswordAsync(UserResetPasswordDto dto);
     Task<BaseResponse<string>> SendResetPasswordEmailAsync(string email);
+    Task<BaseResponse<List<UserGetDto>>> GetAllUsersAsync();
+    Task<BaseResponse<UserGetDto>> GetUserByIdAsync(string id);
+    Task<BaseResponse<UserProfileDto>> GetMyProfileAsync(string userId);
 }

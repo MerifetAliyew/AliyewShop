@@ -19,7 +19,7 @@ public class BaseResponse<T>
     public BaseResponse(string message, HttpStatusCode statusCode)
     {
         Message = message;
-        Success = false;
+        Success = true;
         StatusCode = statusCode;
     }
 
