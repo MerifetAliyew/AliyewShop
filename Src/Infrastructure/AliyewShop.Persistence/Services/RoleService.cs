@@ -70,5 +70,12 @@ public class RoleService : IRoleService
 
         return new BaseResponse<string>("Role uğurla silindi.", true, HttpStatusCode.OK);
     }
+
+    public async Task<BaseResponse<List<string>>> GetAllRolesAsync()
+    {
+        var roles = _roleManager.Roles.Select(r => r.Name).ToList();
+
+        return new BaseResponse<List<string>>("Rollar siyahısı", roles, HttpStatusCode.OK);
+    }
 }
 

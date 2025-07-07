@@ -148,33 +148,25 @@ public class CategoryService : ICategoryService
 
     public async Task<BaseResponse<List<CategoryTreeDto>>> GetCategoryTreeAsync()
     {
-        var allCategories = await _categoryRepository
-            .GetAll(true)
-            .Include(c => c.SubCategories)
-            .ToListAsync();
+        var categories = await _categoryRepository.GetAllWithSubCategoriesAsync();
 
-        var mainCategories = allCategories
-            .Where(c => c.ParentCategoryId == null)
-            .ToList();
+        // Yalnız root/main kateqoriyaları (yəni ParentCategoryId = null) alırıq
+        var mainCategories = categories.Where(c => c.ParentCategoryId == null).ToList();
 
-        var treeList = mainCategories
-            .Select(main => BuildTree(main, allCategories))
-            .ToList();
+        // Rekursiv funksiyamız ilə tree qururuq
+        var result = mainCategories.Select(c => MapToTreeDto(c)).ToList();
 
-        return new BaseResponse<List<CategoryTreeDto>>("Kateqoriyalar ağacı uğurla yaradıldı", treeList, HttpStatusCode.OK);
+        return new BaseResponse<List<CategoryTreeDto>>("Tree view hazırdır", result, HttpStatusCode.OK);
     }
 
-    private CategoryTreeDto BuildTree(Category category, List<Category> allCategories)
+    // Rekursiv mapper
+    private CategoryTreeDto MapToTreeDto(Category category)
     {
         return new CategoryTreeDto
         {
             Id = category.Id,
             Name = category.Name,
-            Description = category.Description,
-            SubCategories = allCategories
-                .Where(sub => sub.ParentCategoryId == category.Id)
-                .Select(sub => BuildTree(sub, allCategories))
-                .ToList()
+            SubCategories = category.SubCategories?.Select(MapToTreeDto).ToList() ?? new()
         };
     }
 }

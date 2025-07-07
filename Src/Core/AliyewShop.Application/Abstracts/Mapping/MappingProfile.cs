@@ -5,6 +5,7 @@ using AliyewShop.Application.DTOs.CategoryDtos;
 using AliyewShop.Application.DTOs.OrderProductDtos;
 using AliyewShop.Application.DTOs.ProductDtos;
 using AliyewShop.Application.DTOs.FavouriteDtos;
+using AliyewShop.Application.DTOs.ReviewDtos;
 
 
 namespace AliyewShop.Application.Abstracts.Mapping;
@@ -61,5 +62,10 @@ public class MappingProfile : Profile
 
         //Favourite 
         CreateMap<FavouriteCreateDto, Favourite>();
+
+        //Review
+        CreateMap<Review, ReviewGetDto>()
+        .ForMember(dest => dest.UserFullName, opt => opt.MapFrom(src => src.User.Fullname));
+        CreateMap<ReviewCreateDto, Review>();
     }
 }

@@ -40,11 +40,22 @@ public class RolesController : ControllerBase
     }
 
     [HttpDelete("{roleName}")]
-    [Authorize(Policy = "RequireAdminRole")]
+    [Authorize(Policy = Permissions.Role.Delete)]
     public async Task<IActionResult> DeleteRole(string roleName)
     {
         var response = await _roleService.DeleteRoleAsync(roleName);
         return StatusCode((int)response.StatusCode, response);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllRoles()
+    {
+        var response = await _roleService.GetAllRolesAsync();
+
+        if (response.StatusCode == HttpStatusCode.OK)
+            return Ok(response.Data);
+
+        return StatusCode((int)response.StatusCode, response.Message);
     }
 
 }

@@ -9,4 +9,5 @@ public interface IRoleService
 {
     Task<BaseResponse<string?>> CreateRole(RoleCreateDto dto);
     Task<BaseResponse<string>> DeleteRoleAsync(string roleName);
+    Task<BaseResponse<List<string>>> GetAllRolesAsync();
 }

@@ -32,4 +32,10 @@ public class FavouriteRepository : Repository<Favourite>, IFavouriteRepository
         return await _context.Favourites
             .FirstOrDefaultAsync(f => f.UserId == userId && f.ProductId == productId);
     }
+
+    public async Task<Favourite?> GetByUserIdAndProductIdAsync(string userId, Guid productId)
+    {
+        return await _context.Favourites
+            .FirstOrDefaultAsync(f => f.UserId == userId && f.ProductId == productId);
+    }
 }

@@ -79,9 +79,10 @@ public class CategoriesController : ControllerBase
         return StatusCode((int)result.StatusCode, result);
     }
 
-    // GET api/categories/tree
     [HttpGet("tree")]
     [ProducesResponseType(typeof(BaseResponse<List<CategoryTreeDto>>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.NotFound)]
+    [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.InternalServerError)]
     public async Task<IActionResult> GetTree()
     {
         var result = await _categoryService.GetCategoryTreeAsync();

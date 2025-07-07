@@ -26,7 +26,7 @@ public class OrderProductsController : ControllerBase
         return StatusCode((int)response.StatusCode, response);
     }
 
-    [HttpPut]
+    [HttpPut("orderproduct-refresh")]
     [Authorize]
     public async Task<IActionResult> Update([FromBody] OrderProductUpdateDto dto)
     {

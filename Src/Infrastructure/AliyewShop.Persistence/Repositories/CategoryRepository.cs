@@ -20,4 +20,11 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
             .Where(c => c.Name.Contains(namePart))
             .ToListAsync();
     }
+
+    public async Task<List<Category>> GetAllWithSubCategoriesAsync()
+    {
+        return await _context.Categories
+            .Include(c => c.SubCategories)
+            .ToListAsync();
+    }
 }

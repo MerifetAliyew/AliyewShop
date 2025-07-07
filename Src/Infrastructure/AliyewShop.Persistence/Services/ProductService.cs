@@ -5,6 +5,7 @@ using AliyewShop.Application.Shared;
 using AutoMapper;
 using System.Net;
 using AliyewShop.Domain.Entities;
+using AliyewShop.Persistence.Repositories;
 
 namespace AliyewShop.Persistence.Services;
 
