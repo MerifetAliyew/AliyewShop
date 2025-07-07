@@ -24,7 +24,7 @@ public class MappingProfile : Profile
         CreateMap<OrderProduct, OrderProductGetDto>()
             .ForMember(dest => dest.OrderNumber, opt => opt.MapFrom(src => src.Order.Id.ToString()));
         //Product         CreateMap<ProductCreateDto, Product>();
-
+        CreateMap<ProductCreateDto, Product>();
         CreateMap<ProductUpdateDto, Product>();
 
         CreateMap<Product, ProductGetDto>()
@@ -43,7 +43,12 @@ public class MappingProfile : Profile
 
         // Order
         // Order -> OrderGetDto
-        CreateMap<Order, OrderGetDto>();
+        CreateMap<Order, OrderGetDto>()
+    .ForMember(dest => dest.OrderProducts, opt => opt.MapFrom(src => src.OrderProducts));
+
+        CreateMap<OrderProduct, OrderProductDto>()
+            .ForMember(dest => dest.ProductTitle, opt => opt.MapFrom(src => src.Product.Title))
+            .ForMember(dest => dest.ProductPrice, opt => opt.MapFrom(src => src.ProductPrice));
 
         // OrderProduct -> OrderProductGetDto
         CreateMap<OrderProduct, OrderProductGetDto>()
@@ -53,5 +58,8 @@ public class MappingProfile : Profile
         // ProductIds əllə işlənir, ona görə burada skip edirik)
         CreateMap<OrderCreateDto, Order>()
             .ForMember(dest => dest.OrderProducts, opt => opt.Ignore());
+
+        //Favourite 
+        CreateMap<FavouriteCreateDto, Favourite>();
     }
 }

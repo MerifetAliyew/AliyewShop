@@ -3,6 +3,7 @@ using System.Security.Claims;
 using AliyewShop.Application.Abstracts.Services;
 using AliyewShop.Application.DTOs.UserDtos;
 using AliyewShop.Application.Shared;
+using AliyewShop.Application.Validations.FavouriteValidators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -52,6 +53,7 @@ public class AccountsController : ControllerBase
         return StatusCode((int)result.StatusCode, result);
     }
 
+
     [HttpGet("confirm-email")]
     [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.NotFound)]
@@ -62,6 +64,13 @@ public class AccountsController : ControllerBase
         var result = await _userService.ConfirmEmail(userId, token);
         return StatusCode((int)result.StatusCode, result);
 
+    }
+
+    [HttpPost("add-role-to-user")]
+    public async Task<IActionResult> AddRoleToUser([FromBody] UserAddRoleDto dto)
+    {
+        var res = await _userService.AddRole(dto);
+        return StatusCode((int)res.StatusCode, res);
     }
 
     [HttpPost("reset-password")]

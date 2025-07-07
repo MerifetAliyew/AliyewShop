@@ -23,6 +23,7 @@ using System.Security.Claims;
 using AliyewShop.Application.Validations.CategoryValidators;
 
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -51,6 +52,8 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     .AddDefaultTokenProviders();
 
 builder.Services.RegisterService();
+
+
 
 builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));

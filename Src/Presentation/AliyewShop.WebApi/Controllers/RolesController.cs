@@ -31,8 +31,8 @@ public class RolesController : ControllerBase
         return StatusCode((int)result.StatusCode, result);
     }
 
-    [HttpGet("permissions")]
 
+    [HttpGet("permissions")]
     public IActionResult GetAllPermissions()
     {
         var permissions = PermissionHelper.GetAllPermissions();
@@ -46,6 +46,5 @@ public class RolesController : ControllerBase
         var response = await _roleService.DeleteRoleAsync(roleName);
         return StatusCode((int)response.StatusCode, response);
     }
-
 
 }

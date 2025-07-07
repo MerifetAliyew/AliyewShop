@@ -26,19 +26,10 @@ public class OrderService : IOrderService
 
     public async Task<BaseResponse<string>> CreateOrderAsync(string userId, OrderCreateDto dto)
     {
-        // Məhsulları bazadan al
         var products = await _productRepository.GetAllByIdsAsync(dto.ProductIds);
 
         if (products.Count != dto.ProductIds.Count)
             return new BaseResponse<string>("Bəzi məhsullar tapılmadı", HttpStatusCode.BadRequest);
-
-        var orderProducts = products.Select(p => new OrderProduct
-        {
-            ProductId = p.Id,
-            PriceAtOrderTime = p.Price
-        }).ToList();
-
-        var grandTotal = orderProducts.Sum(op => op.PriceAtOrderTime);
 
         var order = new Order
         {
@@ -46,10 +37,29 @@ public class OrderService : IOrderService
             OrderAt = DateTime.UtcNow,
             PaymentType = dto.PaymentType,
             ShipToAddress = dto.ShipToAddress,
-            GrandTotal = grandTotal,
             Progress = "Pending",
-            OrderProducts = orderProducts
+            OrderProducts = new List<OrderProduct>()
         };
+
+        decimal grandTotal = 0;
+
+        foreach (var product in products)
+        {
+            var orderProduct = new OrderProduct
+            {
+                ProductId = product.Id,
+                ProductCount = 1,                   // Hər məhsuldan 1 ədəd
+                ProductPrice = product.Price,
+                PriceAtOrderTime = product.Price,
+                Order = order
+            };
+
+            grandTotal += product.Price;
+
+            order.OrderProducts.Add(orderProduct);
+        }
+
+        order.GrandTotal = grandTotal;
 
         await _orderRepository.AddAsync(order);
         await _orderRepository.SaveChangeAsync();
