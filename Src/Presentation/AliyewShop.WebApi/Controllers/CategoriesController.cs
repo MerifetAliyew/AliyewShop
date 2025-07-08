@@ -34,6 +34,7 @@ public class CategoriesController : ControllerBase
 
     // PUT api/categories/{id}
     [HttpPut("{id}")]
+    [Authorize(Policy = Permissions.Category.Update)]
     [ProducesResponseType(typeof(BaseResponse<CategoryUpdateDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType(typeof(BaseResponse<string>), (int)HttpStatusCode.NotFound)]

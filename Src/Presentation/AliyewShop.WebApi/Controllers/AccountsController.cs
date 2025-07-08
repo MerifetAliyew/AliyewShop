@@ -102,7 +102,7 @@ public class AccountsController : ControllerBase
     }
 
     // GET /api/users  (yalnız Admin)
-    [HttpGet]
+    [HttpGet("general")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllUsers()
     {
@@ -118,7 +118,7 @@ public class AccountsController : ControllerBase
         return StatusCode((int)result.StatusCode, result);
     }
 
-    [HttpGet("me")]
+    [HttpGet("token-me")]
     [Authorize]
     public async Task<IActionResult> GetMyProfile()
     {

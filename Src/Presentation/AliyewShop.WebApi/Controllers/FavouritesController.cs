@@ -4,6 +4,7 @@ using AliyewShop.Application.Shared;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,6 +24,7 @@ public class FavouritesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = Permissions.Product.AddFavourite)]
     public async Task<IActionResult> AddToFavourite(Guid productId)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -43,6 +45,7 @@ public class FavouritesController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetMyFavourites()
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

@@ -27,7 +27,7 @@ public class OrdersController : ControllerBase
 
     // POST /api/orders
     [HttpPost]
-    [Authorize(Roles = "Buyer")]  // Yalnız Buyer rolundakılar sifariş yarada bilər
+    [Authorize(Policy = Permissions.Order.Create)]
     public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDto dto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -44,7 +44,7 @@ public class OrdersController : ControllerBase
 
     // GET /api/orders/my
     [HttpGet("my")]
-    [Authorize(Roles = "Buyer")]  // Buyer öz sifarişlərini görür
+    [Authorize(Policy = Permissions.Order.GetMy)]
     public async Task<IActionResult> GetMyOrders()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -57,7 +57,7 @@ public class OrdersController : ControllerBase
 
     // GET /api/orders/my-sales
     [HttpGet("my-sales")]
-    [Authorize(Roles = "Seller")]  // Seller öz məhsullarının satışlarını görür
+    [Authorize(Policy = Permissions.Order.GetMySales)]
     public async Task<IActionResult> GetMySales()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -70,6 +70,7 @@ public class OrdersController : ControllerBase
 
     // GET /api/orders/{id}
     [HttpGet("{id:guid}")]
+    [Authorize(Policy = Permissions.Order.GetDetail)]
     public async Task<IActionResult> GetOrderById(Guid id)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

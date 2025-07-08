@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using AliyewShop.Application.Shared;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,6 +33,7 @@ public class ProductsController : ControllerBase
 
     // GET /api/products/{id}
     [HttpGet("{id}")]
+    [Authorize(Policy = Permissions.Product.Delete)]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _productService.GetByIdAsync(id);
@@ -40,7 +42,7 @@ public class ProductsController : ControllerBase
 
     // GET /api/products/my
     [HttpGet("my")]
-    [Authorize(Roles = "Seller")]
+    [Authorize(Policy = Permissions.Product.GetMy)]
     public async Task<IActionResult> GetMyProducts()
     {
         var userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -53,7 +55,7 @@ public class ProductsController : ControllerBase
 
     // POST /api/products
     [HttpPost]
-    [Authorize(Roles = "Seller")]
+    [Authorize(Policy = Permissions.Product.Create)]
     public async Task<IActionResult> Create([FromBody] ProductCreateDto dto)
     {
         var userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -66,7 +68,7 @@ public class ProductsController : ControllerBase
 
     // PUT /api/products/{id}
     [HttpPut("{id}")]
-    [Authorize(Roles = "Seller")]
+    [Authorize(Policy = Permissions.Product.Update)]
     public async Task<IActionResult> Update(Guid id, [FromBody] ProductUpdateDto dto)
     {
         if (id != dto.Id)
@@ -82,7 +84,7 @@ public class ProductsController : ControllerBase
 
     // DELETE /api/products/{id}
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Seller")]
+    [Authorize(Policy = Permissions.Product.Delete)]
     public async Task<IActionResult> Delete(Guid id)
     {
         var userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
