@@ -7,4 +7,5 @@ public interface ICategoryRepository : IRepository<Category>
     Task<List<Category>> GetByNameSearchAsync(string namePart);
     Task<Category?> GetByIdAsync(Guid id);
     Task<List<Category>> GetAllWithSubCategoriesAsync();
+    void SoftDelete(Category entity);
 }

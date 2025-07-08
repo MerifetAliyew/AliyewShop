@@ -7,6 +7,7 @@ public class AppUser : IdentityUser
     public string Fullname { get; set; } = null!;
     public string? RefreshToken { get; set; } = null!;
     public DateTime? ExpiryDate { get; set; }
+    public bool IsDeleted { get; set; } = false;
     public ICollection<Product> Products { get; set; } =null!;
     public ICollection<Order> Orders { get; set; } = null!;
     public ICollection<Favourite> Favourites { get; set; }

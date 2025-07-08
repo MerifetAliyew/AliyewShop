@@ -47,13 +47,20 @@ public class FavouriteService : IFavouriteService
 
     public async Task<BaseResponse<string>> RemoveFromFavouriteAsync(string userId, Guid productId)
     {
-        var favourite = await _favouriteRepository.GetFavouriteByUserIdAndProductIdAsync(userId, productId);
-        if (favourite == null)
-            return new BaseResponse<string>("Sevimli məhsul tapılmadı", HttpStatusCode.NotFound);
+        var favourite = await _favouriteRepository.GetByUserIdAndProductIdAsync(userId, productId);
 
-        _favouriteRepository.Delete(favourite);
+        if (favourite == null || favourite.IsDeleted)
+            return new BaseResponse<string>("Favorit tapılmadı", HttpStatusCode.NotFound);
+
+        if (favourite.UserId != userId)
+            return new BaseResponse<string>("Favoriti silmək üçün səlahiyyətiniz yoxdur", HttpStatusCode.Forbidden);
+
+        // Soft delete tətbiq et
+        favourite.IsDeleted = true;
+        favourite.DeletedAt = DateTime.UtcNow;
+
         await _favouriteRepository.SaveChangeAsync();
 
-        return new BaseResponse<string>("Sevimli məhsul silindi", HttpStatusCode.OK);
+        return new BaseResponse<string>("Favorit uğurla silindi", HttpStatusCode.OK);
     }
 }

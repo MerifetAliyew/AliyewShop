@@ -49,16 +49,17 @@ public class CategoryService : ICategoryService
 
     public async Task<BaseResponse<string>> DeleteAsync(Guid id)
     {
-        var categoryDb = await _categoryRepository.GetByIdAsync(id);
+        var category = await _categoryRepository.GetByIdAsync(id);
 
-        if (categoryDb is null)
+        if (category == null || category.IsDeleted)
         {
-            return new BaseResponse<string>("Id not found", false, HttpStatusCode.NotFound);
+            return new BaseResponse<string>("Category not found", false, HttpStatusCode.NotFound);
         }
 
-        _categoryRepository.Delete(categoryDb);
+        _categoryRepository.SoftDelete(category);
         await _categoryRepository.SaveChangeAsync();
-        return new BaseResponse<string>("Successfully deleted", true, HttpStatusCode.OK); ;
+
+        return new BaseResponse<string>("Category successfully deleted (soft delete)", true, HttpStatusCode.OK);
     }
 
     public async Task<BaseResponse<List<CategoryGetDto>>> GetAllAsync()

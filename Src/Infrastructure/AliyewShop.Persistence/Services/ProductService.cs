@@ -102,17 +102,18 @@ public class ProductService : IProductService
         return new BaseResponse<string>("Məhsul uğurla yeniləndi", HttpStatusCode.OK);
     }
 
-    public async Task<BaseResponse<string>> DeleteAsync(Guid id, string sellerId)
+    public async Task<BaseResponse<string>> DeleteAsync(Guid productId, string sellerId)
     {
-        var existingProduct = await _productRepository.GetByIdAsync(id);
+        var product = await _productRepository.GetByIdAsync(productId);
 
-        if (existingProduct == null)
+        if (product == null || product.IsDeleted)
             return new BaseResponse<string>("Məhsul tapılmadı", HttpStatusCode.NotFound);
 
-        if (existingProduct.OwnerId != sellerId)
+        if (product.OwnerId != sellerId)
             return new BaseResponse<string>("Məhsulu silmək üçün səlahiyyətiniz yoxdur", HttpStatusCode.Forbidden);
 
-        _productRepository.Delete(existingProduct);
+        // Soft delete edir
+        _productRepository.Delete(product);
         await _productRepository.SaveChangeAsync();
 
         return new BaseResponse<string>("Məhsul uğurla silindi", HttpStatusCode.OK);

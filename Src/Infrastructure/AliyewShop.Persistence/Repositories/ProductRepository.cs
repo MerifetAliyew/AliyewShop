@@ -14,6 +14,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
         _context = context;
     }
 
+    // Bütün məhsulları filterlərlə gətirir, yalnız silinməmişlər
     public async Task<List<Product>> GetAllWithFiltersAsync(
         Guid? categoryId = null,
         decimal? minPrice = null,
@@ -21,6 +22,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
         string? search = null)
     {
         var query = _context.Products
+            .Where(p => !p.IsDeleted) // Soft delete filter
             .Include(p => p.Category)
             .Include(p => p.Owner)
             .Include(p => p.Images)
@@ -47,18 +49,28 @@ public class ProductRepository : Repository<Product>, IProductRepository
         return await query.ToListAsync();
     }
 
+    // Seller-in məhsullarını gətirir, yalnız silinməmişlər
     public async Task<List<Product>> GetBySellerIdAsync(string sellerId)
     {
         return await _context.Products
-            .Where(p => p.SellerId == sellerId)
+            .Where(p => p.SellerId == sellerId && !p.IsDeleted)  // Soft delete filter
             .Include(p => p.Category)
             .Include(p => p.Images)
             .ToListAsync();
     }
+
+    // İd-lərlə məhsulları gətirir, yalnız silinməmişlər
     public async Task<List<Product>> GetAllByIdsAsync(List<Guid> ids)
     {
         return await _context.Products
-                             .Where(p => ids.Contains(p.Id))
-                             .ToListAsync();
+            .Where(p => ids.Contains(p.Id) && !p.IsDeleted)  // Soft delete filter
+            .ToListAsync();
+    }
+
+    // Soft delete üçün override edilə bilər, amma əgər base repository varsa, burda da yaz
+    public void Delete(Product product)
+    {
+        product.IsDeleted = true;
+        _context.Products.Update(product);
     }
 }

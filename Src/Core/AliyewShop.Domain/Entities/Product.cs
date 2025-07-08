@@ -41,6 +41,7 @@ public class Product : BaseEntity
     public string SellerId { get; set; }   // 🔥 UserId kimi olacaq
     public AppUser Seller { get; set; }
     // Məhsula aid şəkillər
+    public bool IsDeleted { get; set; } = false;
     public ICollection<Image> Images { get; set; }
 
     // Favoritə əlavə olunmuş məhsullar

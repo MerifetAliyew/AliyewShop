@@ -11,20 +11,27 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
 
     public CategoryRepository(AliyewShopDbContext context) : base(context)
     {
-        _context = context; 
+        _context = context;
     }
 
     public async Task<List<Category>> GetByNameSearchAsync(string namePart)
     {
         return await _context.Categories
-            .Where(c => c.Name.Contains(namePart))
+            .Where(c => !c.IsDeleted && c.Name.Contains(namePart))
             .ToListAsync();
     }
 
     public async Task<List<Category>> GetAllWithSubCategoriesAsync()
     {
         return await _context.Categories
-            .Include(c => c.SubCategories)
+            .Where(c => !c.IsDeleted)
+            .Include(c => c.SubCategories.Where(sc => !sc.IsDeleted))
             .ToListAsync();
+    }
+    public void SoftDelete(Category entity)
+    {
+        entity.IsDeleted = true;
+        entity.DeletedAt = DateTime.UtcNow;
+        _context.Categories.Update(entity);
     }
 }

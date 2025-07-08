@@ -2,6 +2,7 @@
 using AliyewShop.Domain.Entities;
 using AliyewShop.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
+using AliyewShop.Domain.Entities;
 
 namespace AliyewShop.Persistence.Repositories;
 
@@ -15,7 +16,9 @@ public class FavouriteRepository : Repository<Favourite>, IFavouriteRepository
     }
     public void Remove(Favourite entity)
     {
-        _context.Favourites.Remove(entity);
+        entity.IsDeleted = true;
+        entity.DeletedAt = DateTime.UtcNow;
+        _context.Favourites.Update(entity);
     }
 
     public async Task<List<Favourite>> GetFavouritesByUserIdAsync(string userId)

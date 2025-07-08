@@ -8,4 +8,6 @@ public class Category : BaseEntity
     public Category? ParentCategory { get; set; }
     public ICollection<Category> SubCategories { get; set; }
     public ICollection<Product> Products { get; set; }
+    public bool IsDeleted { get; set; }  
+    public DateTime? DeletedAt { get; set; }  
 }
